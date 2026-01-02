@@ -4,23 +4,16 @@
     {
       "src": "api/merge.py",
       "use": "@vercel/python"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "src": "/api/merge",
+      "dest": "api/merge.py"
     },
     {
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ],
-  "env": {
-    "PYTHON_VERSION": "3.9"
-  }
+  ]
 }

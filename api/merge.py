@@ -1,11 +1,10 @@
-from flask import Flask, request, jsonify
+from http.server import BaseHTTPRequestHandler
+import json
 import google.generativeai as genai
 from PIL import Image
 import io
 import base64
 import os
-
-app = Flask(__name__)
 
 def setup_gemini(api_key):
     """Setup Gemini AI with API key"""
@@ -60,74 +59,92 @@ def simple_merge(person_img, product_img, position=(0.5, 0.5), scale=0.3, opacit
     
     return result
 
-@app.route('/api/merge', methods=['POST'])
-def merge_images():
-    try:
-        # Get data from request
-        data = request.get_json()
-        
-        if not data or 'person_image' not in data or 'product_image' not in data or 'api_key' not in data:
-            return jsonify({'error': 'Missing required data'}), 400
-        
-        api_key = data['api_key']
-        
-        # Decode base64 images
-        person_data = base64.b64decode(data['person_image'].split(',')[1])
-        product_data = base64.b64decode(data['product_image'].split(',')[1])
-        
-        person_img = Image.open(io.BytesIO(person_data))
-        product_img = Image.open(io.BytesIO(product_data))
-        
-        # Setup Gemini
-        model = setup_gemini(api_key)
-        
-        # Analyze with Gemini
-        analysis = analyze_images_with_gemini(model, person_img, product_img)
-        
-        # Parse settings or use defaults
-        position = (0.5, 0.5)
-        scale = 0.3
-        opacity = 0.9
-        description = "Using default placement"
-        
-        if analysis:
-            try:
-                import re
-                import json
-                json_match = re.search(r'\{[^}]+\}', analysis)
-                if json_match:
-                    parsed = json.loads(json_match.group())
-                    position = (parsed.get('position_x', 0.5), parsed.get('position_y', 0.5))
-                    scale = parsed.get('scale', 0.3)
-                    opacity = parsed.get('opacity', 0.9)
-                    description = parsed.get('description', 'AI-suggested placement')
-            except:
-                pass
-        
-        # Merge images
-        result = simple_merge(person_img, product_img, position, scale, opacity)
-        
-        # Convert to base64
-        buffered = io.BytesIO()
-        result.save(buffered, format="PNG")
-        img_str = base64.b64encode(buffered.getvalue()).decode()
-        
-        return jsonify({
-            'success': True,
-            'image': f'data:image/png;base64,{img_str}',
-            'analysis': analysis or 'Used default settings',
-            'settings': {
-                'position': position,
-                'scale': scale,
-                'opacity': opacity,
-                'description': description
+class handler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        try:
+            # Set CORS headers
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+            self.end_headers()
+            
+            # Read request body
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode('utf-8'))
+            
+            if not data or 'person_image' not in data or 'product_image' not in data or 'api_key' not in data:
+                response = {'error': 'Missing required data'}
+                self.wfile.write(json.dumps(response).encode())
+                return
+            
+            api_key = data['api_key']
+            
+            # Decode base64 images
+            person_data = base64.b64decode(data['person_image'].split(',')[1])
+            product_data = base64.b64decode(data['product_image'].split(',')[1])
+            
+            person_img = Image.open(io.BytesIO(person_data))
+            product_img = Image.open(io.BytesIO(product_data))
+            
+            # Setup Gemini
+            model = setup_gemini(api_key)
+            
+            # Analyze with Gemini
+            analysis = analyze_images_with_gemini(model, person_img, product_img)
+            
+            # Parse settings or use defaults
+            position = (0.5, 0.5)
+            scale = 0.3
+            opacity = 0.9
+            description = "Using default placement"
+            
+            if analysis:
+                try:
+                    import re
+                    json_match = re.search(r'\{[^}]+\}', analysis)
+                    if json_match:
+                        parsed = json.loads(json_match.group())
+                        position = (parsed.get('position_x', 0.5), parsed.get('position_y', 0.5))
+                        scale = parsed.get('scale', 0.3)
+                        opacity = parsed.get('opacity', 0.9)
+                        description = parsed.get('description', 'AI-suggested placement')
+                except:
+                    pass
+            
+            # Merge images
+            result = simple_merge(person_img, product_img, position, scale, opacity)
+            
+            # Convert to base64
+            buffered = io.BytesIO()
+            result.save(buffered, format="PNG")
+            img_str = base64.b64encode(buffered.getvalue()).decode()
+            
+            response = {
+                'success': True,
+                'image': f'data:image/png;base64,{img_str}',
+                'analysis': analysis or 'Used default settings',
+                'settings': {
+                    'position': position,
+                    'scale': scale,
+                    'opacity': opacity,
+                    'description': description
+                }
             }
-        })
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+            
+            self.wfile.write(json.dumps(response).encode())
+            
+        except Exception as e:
+            response = {'error': str(e)}
+            self.wfile.write(json.dumps(response).encode())
+    
+    def do_OPTIONS(self):
+        # Handle CORS preflight
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
 
-# For Vercel serverless function
-def handler(request):
-    with app.request_context(request.environ):
-        return app.full_dispatch_request()
