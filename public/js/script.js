@@ -151,11 +151,11 @@ mergeButton.addEventListener('click', async () => {
     try {
         updateLoadingText('Analyzing images with AI...');
         
-        // Send base64 images to API
-        const response = await fetch('/api/merge', {
+        // Send base64 images as JSON to API
+        const response = await fetch('/api', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 person_image: state.personImage,
