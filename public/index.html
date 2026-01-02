@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Fusion Studio</title>
+    <title>AI Fashion Photo Studio - Virtual Try-On</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,9 +24,9 @@
                         <circle cx="29" cy="29" r="7" fill="currentColor" opacity="0.8"/>
                     </svg>
                 </div>
-                <h1 class="logo-text">Image Fusion Studio</h1>
+                <h1 class="logo-text">Fashion Photo Studio</h1>
             </div>
-            <p class="tagline">Powered by Gemini AI</p>
+            <p class="tagline">AI-Powered Virtual Try-On</p>
         </header>
 
         <!-- Main Content -->
@@ -50,8 +50,8 @@
                     <div class="upload-card" id="personCard">
                         <div class="upload-area" id="personUpload">
                             <div class="upload-icon">👤</div>
-                            <h3>Person Image</h3>
-                            <p>Drag & drop or click to upload</p>
+                            <h3>Model Photo</h3>
+                            <p>Upload photo of person/model</p>
                             <input type="file" id="personInput" accept="image/*" hidden />
                         </div>
                         <div class="preview-container" id="personPreview" style="display: none;">
@@ -70,9 +70,9 @@
 
                     <div class="upload-card" id="productCard">
                         <div class="upload-area" id="productUpload">
-                            <div class="upload-icon">📦</div>
-                            <h3>Product Image</h3>
-                            <p>Drag & drop or click to upload</p>
+                            <div class="upload-icon">👗</div>
+                            <h3>Clothing/Dress</h3>
+                            <p>Upload clothing or dress image</p>
                             <input type="file" id="productInput" accept="image/*" hidden />
                         </div>
                         <div class="preview-container" id="productPreview" style="display: none;">
@@ -84,7 +84,7 @@
 
                 <!-- Action Button -->
                 <button class="merge-button" id="mergeButton" disabled>
-                    <span class="button-text">Merge Images with AI</span>
+                    <span class="button-text">Create Fashion Photo with AI</span>
                     <span class="button-icon">✨</span>
                 </button>
             </section>
@@ -93,7 +93,7 @@
             <section class="result-section" id="resultSection" style="display: none;">
                 <div class="card result-card">
                     <div class="result-header">
-                        <h2>Your Merged Image</h2>
+                        <h2>Your Fashion Photo</h2>
                         <button class="secondary-button" id="newMergeBtn">Create Another</button>
                     </div>
                     

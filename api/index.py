@@ -55,6 +55,9 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(response).encode())
                 return
             
+            # Get custom prompt if provided, otherwise use default
+            custom_prompt = data.get('custom_prompt', '')
+            
             # Import PIL here (lazy import)
             try:
                 from PIL import Image
@@ -94,15 +97,54 @@ class handler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(response).encode())
                 return
             
-            # Analyze with Gemini (optional - use defaults if fails)
+            # Analyze with Gemini for fashion photography composition
             position = (0.5, 0.5)
-            scale = 0.3
-            opacity = 0.9
-            description = "Using default placement"
-            analysis = "Used default settings"
+            scale = 0.4
+            opacity = 1.0
+            description = "Fashion photography composition"
+            analysis = "Fashion photo generation"
             
             try:
-                prompt = """Analyze these two images. Provide JSON: {"position_x": 0.5, "position_y": 0.5, "scale": 0.3, "opacity": 0.9, "description": "brief description"}"""
+                # Use custom prompt if provided, otherwise use default fashion prompt
+                if custom_prompt:
+                    prompt = custom_prompt
+                else:
+                    prompt = """You are a professional fashion photographer and AI image compositor.
+
+TASK: Create a hyper-realistic fashion promotional photo where the person is wearing the exact dress/clothing from the product image.
+
+CRITICAL REQUIREMENTS:
+
+1. CLOTHING INTEGRATION:
+   - The person MUST be wearing the exact dress/clothing from the product image
+   - Dress fits naturally to body shape, perfectly aligned with posture and pose
+   - Accurate fabric texture, realistic folds, stitching details, natural cloth movement
+   - Proper draping and fabric physics
+
+2. VISUAL QUALITY:
+   - Professional fashion photography aesthetic
+   - Studio-quality lighting, consistent between model and clothing
+   - Realistic shadows and highlights
+   - Color tone harmony
+   - Sharp focus, high resolution
+   - No distortion, no mismatched proportions, no artificial look
+
+3. COMPOSITION:
+   - Clean background, elegant commercial fashion style
+   - Natural body language and professional pose
+   - Seamless integration (looks like real photo, not overlay)
+
+Provide JSON with optimal composition parameters:
+{
+    "position_x": 0.5,
+    "position_y": 0.5,
+    "scale": 0.4,
+    "opacity": 1.0,
+    "description": "Fashion photography strategy description"
+}
+
+Goal: Result should look like a professional fashion catalog photo."""
+                
                 response_ai = model.generate_content([prompt, person_img, product_img])
                 analysis = response_ai.text
                 
@@ -111,9 +153,9 @@ class handler(BaseHTTPRequestHandler):
                 if json_match:
                     parsed = json.loads(json_match.group())
                     position = (parsed.get('position_x', 0.5), parsed.get('position_y', 0.5))
-                    scale = parsed.get('scale', 0.3)
-                    opacity = parsed.get('opacity', 0.9)
-                    description = parsed.get('description', 'AI-suggested placement')
+                    scale = parsed.get('scale', 0.4)
+                    opacity = parsed.get('opacity', 1.0)
+                    description = parsed.get('description', 'AI-suggested fashion composition')
             except:
                 pass  # Use defaults
             

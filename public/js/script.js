@@ -146,10 +146,10 @@ mergeButton.addEventListener('click', async () => {
         return;
     }
     
-    showLoading('Analyzing images with AI...');
+    showLoading('Creating fashion photo with AI...');
     
     try {
-        updateLoadingText('Analyzing images with AI...');
+        updateLoadingText('Analyzing model and clothing...');
         
         // Send base64 images as JSON to API
         const response = await fetch('/api', {
@@ -164,16 +164,16 @@ mergeButton.addEventListener('click', async () => {
             })
         });
         
-        updateLoadingText('Creating composite image...');
+        updateLoadingText('Generating professional fashion photo...');
         
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.error || 'Merge failed');
+            throw new Error(error.error || 'Photo creation failed');
         }
         
         const result = await response.json();
         
-        updateLoadingText('Finalizing result...');
+        updateLoadingText('Finalizing your fashion photo...');
         
         // Show result
         setTimeout(() => {
@@ -202,7 +202,7 @@ function updateLoadingText(text) {
 
 function showResult(result) {
     resultImage.src = result.image;
-    aiAnalysis.textContent = result.settings.description || result.analysis || 'Successfully merged images!';
+    aiAnalysis.textContent = result.settings.description || result.analysis || 'Fashion photo created successfully!';
     
     setupSection.style.display = 'none';
     resultSection.style.display = 'block';
