@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Fusion Studio</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="grain-overlay"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="4" y="4" width="14" height="14" rx="2" fill="currentColor" opacity="0.6"/>
+                        <rect x="22" y="4" width="14" height="14" rx="2" fill="currentColor"/>
+                        <rect x="4" y="22" width="14" height="14" rx="2" fill="currentColor"/>
+                        <circle cx="29" cy="29" r="7" fill="currentColor" opacity="0.8"/>
+                    </svg>
+                </div>
+                <h1 class="logo-text">Image Fusion Studio</h1>
+            </div>
+            <p class="tagline">Powered by Gemini AI</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Setup Section -->
+            <section class="setup-section" id="setupSection">
+                <div class="card api-card">
+                    <div class="card-header">
+                        <h2>Configure API</h2>
+                        <span class="status-badge" id="apiStatus">Not Connected</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="apiKey">Gemini API Key</label>
+                        <input type="password" id="apiKey" placeholder="Enter your Gemini API key..." />
+                        <p class="help-text">Get your free API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></p>
+                    </div>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="upload-grid">
+                    <div class="upload-card" id="personCard">
+                        <div class="upload-area" id="personUpload">
+                            <div class="upload-icon">👤</div>
+                            <h3>Person Image</h3>
+                            <p>Drag & drop or click to upload</p>
+                            <input type="file" id="personInput" accept="image/*" hidden />
+                        </div>
+                        <div class="preview-container" id="personPreview" style="display: none;">
+                            <img id="personImg" alt="Person" />
+                            <button class="remove-btn" id="removePerson">×</button>
+                        </div>
+                    </div>
+
+                    <div class="merge-indicator">
+                        <div class="merge-icon">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12H19M19 12L13 6M19 12L13 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="upload-card" id="productCard">
+                        <div class="upload-area" id="productUpload">
+                            <div class="upload-icon">📦</div>
+                            <h3>Product Image</h3>
+                            <p>Drag & drop or click to upload</p>
+                            <input type="file" id="productInput" accept="image/*" hidden />
+                        </div>
+                        <div class="preview-container" id="productPreview" style="display: none;">
+                            <img id="productImg" alt="Product" />
+                            <button class="remove-btn" id="removeProduct">×</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button class="merge-button" id="mergeButton" disabled>
+                    <span class="button-text">Merge Images with AI</span>
+                    <span class="button-icon">✨</span>
+                </button>
+            </section>
+
+            <!-- Result Section -->
+            <section class="result-section" id="resultSection" style="display: none;">
+                <div class="card result-card">
+                    <div class="result-header">
+                        <h2>Your Merged Image</h2>
+                        <button class="secondary-button" id="newMergeBtn">Create Another</button>
+                    </div>
+                    
+                    <div class="result-image-container">
+                        <img id="resultImage" alt="Merged result" />
+                    </div>
+
+                    <div class="result-info">
+                        <h3>AI Analysis</h3>
+                        <p id="aiAnalysis"></p>
+                    </div>
+
+                    <div class="result-actions">
+                        <button class="primary-button" id="downloadBtn">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 3V16M12 16L7 11M12 16L17 11M3 21H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Download Image
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Overlay -->
+            <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <h3>AI is working its magic...</h3>
+                    <p id="loadingText">Analyzing images</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with Gemini AI • Flask • Love</p>
+        </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>
